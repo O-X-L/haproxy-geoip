@@ -2,7 +2,11 @@
 
 This is an example on how to use GeoIP lookups in combination with HAProxy.
 
-Note: Tested mainly with ipinfo country-database.
+Data linking requests to its origin country and ASN/ISP can be very useful when dealing with application-level attacks.
+
+This allows you also to handle requests from specific countries and ASNs (p.e. datacenters/hosting providers) differently than others.
+
+Note: Tested mainly with the ipinfo.io country-database.
 
 ## Topology
 
