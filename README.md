@@ -2,6 +2,8 @@
 
 This is an example on how to use GeoIP lookups in combination with HAProxy.
 
+Note: Tested mainly with ipinfo country-database.
+
 ## Topology
 
 1. Request hits HAProxy
@@ -13,6 +15,8 @@ This is an example on how to use GeoIP lookups in combination with HAProxy.
 3. LUA calls a minimal web-service on localhost that queries the GeoIP-database
 
    In this case we use a basic Python3 HTTP-Server
+
+<img src="https://raw.githubusercontent.com/superstes/haproxy-geoip-lua/latest/topology.svg" width=200>
 
 ----
 
@@ -44,7 +48,7 @@ To query the MMDB databases, you will have to install the `mmdblookup` util:
 apt install mmdb-bin
 ```
 
-You will have to update the paths to your database-files in the `lookup_geoip_backend.py` file!
+You will have to update the paths to your database-files in the `geoip_lookup_backend.py` file!
 
 ----
 
@@ -52,7 +56,7 @@ You will have to update the paths to your database-files in the `lookup_geoip_ba
 
 ```bash
 # start the web-service
-python3 lookup_geoip_backend.py &
+python3 geoip_lookup_backend.py &
 # initialize the haproxy map(s)
 touch /tmp/haproxy_geoip_country.map
 # start haproxy
