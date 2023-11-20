@@ -12,15 +12,15 @@ DATABASES = {
     'country': {'file': '/tmp/country.mmdb', 'attr': 'country', 'fallback': '00'},
     'continent': {'file': '/tmp/country.mmdb', 'attr': 'continent', 'fallback': '00'},
     'asn': {'file': '/tmp/asn.mmdb', 'attr': 'asn', 'fallback': '0'},
-    'asn_name': {'file': '/tmp/asn.mmdb', 'attr': 'name', 'fallback': '-'},
+    'asname': {'file': '/tmp/asn.mmdb', 'attr': 'name', 'fallback': '-'},
 }
 
 
 def _lookup_mmdb(db: dict, ip: str) -> str:
-    if not Path(db['file']).is_file():
-        return db['fallback']
-
     try:
+        if not Path(db['file']).is_file():
+            return db['fallback']
+
         with subprocess.Popen(
             ['mmdblookup', '-f', db['file'], '-i', ip, db['attr']],
             shell=False,
@@ -38,7 +38,7 @@ def _lookup_mmdb(db: dict, ip: str) -> str:
             return stdout_raw
 
     except (subprocess.TimeoutExpired, subprocess.SubprocessError, subprocess.CalledProcessError,
-            OSError, IOError):
+            OSError, IOError, KeyError):
         return db['fallback']
 
 
@@ -59,12 +59,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if 'lookup' not in q or _ensure_str(q['lookup']) not in DATABASES:
             self.send_response(400)
             self.end_headers()
-            self.wfile.write('Got unsupported lookup'.encode("utf-8"))
+            self.wfile.write('Got unsupported lookup'.encode('utf-8'))
 
         if 'ip' not in q:
             self.send_response(400)
             self.end_headers()
-            self.wfile.write('No IP provided'.encode("utf-8"))
+            self.wfile.write('No IP provided'.encode('utf-8'))
 
         lookup = _ensure_str(q['lookup'])
         ip = _ensure_str(q['ip'])
@@ -72,9 +72,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         print(f"{lookup} | {ip} => {data}")
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(data.encode("utf-8"))
+        self.wfile.write(data.encode('utf-8'))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     server = HTTPServer(('127.0.0.1', PORT), WebRequestHandler)
     server.serve_forever()

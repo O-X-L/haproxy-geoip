@@ -1,0 +1,2 @@
+# PYTHON PIP REQUIREMENTS FOR 'geoip_lookup_backend_lib.py'
+maxminddb
