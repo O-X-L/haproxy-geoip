@@ -128,4 +128,4 @@ bash test.sh
 > FINISHED - exiting
 ```
 
-Feel free to contribute more test-cases!
+Feel free to [contribute more test-cases](https://github.com/superstes/haproxy-geoip-lua/blob/latest/test/test_requests.sh)!
