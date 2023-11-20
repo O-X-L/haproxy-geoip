@@ -7,10 +7,12 @@ on:
     branches: [latest]
     paths:
       - '**.py'
+      - '.github/workflows/lint.yml'
   pull_request:
     branches: [latest]
     paths:
       - '**.py'
+      - '.github/workflows/lint.yml'
 
 jobs:
   build:
