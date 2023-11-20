@@ -39,6 +39,8 @@ See also: `haproxy_example.cfg - test_country_cachemap`
 
 The speed-improvements as seen by running the test-script are: `first: 0.03, second: 0.00`
 
+By utilizing [HAProxy's ipmask](https://www.haproxy.com/blog/ip-masking-in-haproxy) (`src,ipmask(24,48)`) feature we are able to reduce the needed entries inside the map to the minimal subnets that are announced on public BGP.  
+
 ### GeoIP
 
 You will have to download some MMDB GeoIP databases.
