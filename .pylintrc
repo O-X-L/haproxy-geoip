@@ -152,6 +152,7 @@ disable=E0611, E0401,  # ansible modules will not be found
         W0511,  # todo comments
         R0205,  # filter-modules
         R1735,  # dict-call for config
+        R0801,  # duplicate code-fragments
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

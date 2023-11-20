@@ -1,0 +1,36 @@
+---
+
+name: Lint
+
+on:
+  push:
+    branches: [latest]
+  pull_request:
+    branches: [latest]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: [3.10]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements_lint.txt
+        shell: bash
+
+      - name: Running PyLint
+        run: pylint --recursive=y .
+        shell: bash
