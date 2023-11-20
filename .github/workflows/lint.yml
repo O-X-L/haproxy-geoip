@@ -5,8 +5,12 @@ name: Lint
 on:
   push:
     branches: [latest]
+    paths:
+      - '**.py'
   pull_request:
     branches: [latest]
+    paths:
+      - '**.py'
 
 jobs:
   build:
