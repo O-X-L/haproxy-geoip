@@ -12,5 +12,4 @@ then
   echo "ERROR: REQUEST 1 - CACHE NOT HIT"
 fi
 
-/bin/kill -USR2 "$TEST_PROXY_PID"
-sleep 1
+reload_haproxy

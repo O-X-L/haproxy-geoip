@@ -1,13 +1,32 @@
 #!/bin/bash
 
-set -euo pipefail
-
-cd "$(dirname "$0")"
-
 DB_MM_COUNTRY='/tmp/maxmind_country.mmdb'
 DB_MM_ASN='/tmp/maxmind_asn.mmdb'
 DB_II_COUNTRY='/tmp/ipinfo_country.mmdb'
 DB_II_ASN='/tmp/ipinfo_asn.mmdb'
+
+set -euo pipefail
+
+function cleanup_process() {
+  search="$1"
+  pkill -f "$search" --uid "$UID" 2> /dev/null || true
+}
+
+function reload_haproxy() {
+  pid="$(grep 'worker' < '/tmp/haproxy_test_err.log' | head -n 1 | cut -d '(' -f2 | cut -d ')' -f1)"
+  /bin/kill -USR2 "$pid"
+  sleep 1
+}
+
+echo ''
+echo 'CLEANUP'
+rm -f /tmp/haproxy_*
+cleanup_process 'haproxy'
+cleanup_process 'geoip_lookup.py'
+cleanup_process 'geoip_lookup_golang'
+sleep 1
+
+cd "$(dirname "$0")"
 
 TEST_PROXY='http://localhost:6969'
 TEST_HDR='TEST-SRC'
@@ -67,17 +86,16 @@ touch '/tmp/haproxy_geoip_country.map'
 touch '/tmp/haproxy_geoip_continent.map'
 touch '/tmp/haproxy_geoip_asn.map'
 touch '/tmp/haproxy_geoip_asname.map'
-ln -sf "$(pwd)/../geoip_lookup.lua" '/tmp/haproxy_geoip_lookup.lua'
 
 echo 'STARTING HAPROXY'
+ln -sf "$(pwd)/../lua/geoip_lookup_w_backend.lua" '/tmp/haproxy_geoip_lookup.lua'
 haproxy -W -f haproxy_test.cfg > '/tmp/haproxy_test.log' 2> '/tmp/haproxy_test_err.log' &
-sleep 1
-TEST_PROXY_PID="$(grep 'worker' < '/tmp/haproxy_test_err.log' | head -n 1 | cut -d '(' -f2 | cut -d ')' -f1)"
 set +e
+sleep 2
 
 echo ''
-echo 'TESTING BACKEND with Lookup-Util'
-python3 "$(pwd)/../geoip_lookup_backend_shell.py" > '/tmp/haproxy_geoip_backend_shell.log' &
+echo 'TESTING with PYTHON-BACKEND'
+python3 "$(pwd)/../backend/geoip_lookup.py" > '/tmp/haproxy_geoip_backend.log' &
 sleep 2
 
 if [[ "$TEST_MM" == "1" ]]
@@ -86,7 +104,7 @@ then
   ln -sf "$DB_MM_COUNTRY" '/tmp/country.mmdb'
   ln -sf "$DB_MM_ASN" '/tmp/asn.mmdb'
 
-  source ./test_requests.sh
+  source ./requests.sh
 fi
 
 if [[ "$TEST_II" == "1" ]]
@@ -95,40 +113,23 @@ then
   ln -sf "$DB_II_COUNTRY" '/tmp/country.mmdb'
   ln -sf "$DB_II_ASN" '/tmp/asn.mmdb'
 
-  source ./test_requests.sh
+  source ./requests.sh
 fi
 
-kill "$(pgrep -f 'geoip_lookup_backend_shell.py')"
-sleep 5
-
-echo ''
-echo 'TESTING BACKEND with Lookup-Lib'
-python3 "$(pwd)/../geoip_lookup_backend_lib.py" > '/tmp/haproxy_geoip_backend_lib.log' &
+cleanup_process 'geoip_lookup.py'
 sleep 2
 
-if [[ "$TEST_MM" == "1" ]]
-then
-  echo 'LINKING MaxMind databases'
-  ln -sf "$DB_MM_COUNTRY" '/tmp/country.mmdb'
-  ln -sf "$DB_MM_ASN" '/tmp/asn.mmdb'
-
-  source ./test_requests.sh
-fi
-
-if [[ "$TEST_II" == "1" ]]
-then
-  echo 'LINKING IPInfo databases'
-  ln -sf "$DB_II_COUNTRY" '/tmp/country.mmdb'
-  ln -sf "$DB_II_ASN" '/tmp/asn.mmdb'
-
-  source ./test_requests.sh
-fi
-
-kill "$(pgrep -f 'geoip_lookup_backend_lib.py')"
+# echo ''
+# echo 'TESTING with GOLANG-BACKEND'
+# todo: build binary
+# "$(pwd)/geoip_lookup_golang" > '/tmp/haproxy_geoip_backend.log' &
+# sleep 2
+# cleanup_process 'geoip_lookup_golang'
+# sleep 2
 
 echo ''
 echo 'STOPPING HAPROXY'
-pkill 'haproxy'
+cleanup_process 'haproxy'
 sleep 5
 
 echo ''
