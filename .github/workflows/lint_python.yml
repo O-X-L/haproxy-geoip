@@ -1,18 +1,18 @@
 ---
 
-name: Lint
+name: Lint Python
 
 on:
   push:
     branches: [latest]
     paths:
       - '**.py'
-      - '.github/workflows/lint.yml'
+      - '.github/workflows/lint_python.yml'
   pull_request:
     branches: [latest]
     paths:
       - '**.py'
-      - '.github/workflows/lint.yml'
+      - '.github/workflows/lint_python.yml'
 
 jobs:
   build:
@@ -20,6 +20,7 @@ jobs:
       matrix:
         python-version: [3.10]
     runs-on: ubuntu-latest
+    timeout-minutes: 2
 
     steps:
       - name: Checkout

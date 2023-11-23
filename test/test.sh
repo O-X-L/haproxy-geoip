@@ -121,7 +121,10 @@ sleep 2
 
 # echo ''
 # echo 'TESTING with GOLANG-BACKEND'
-# todo: build binary
+# cd "$(pwd)/../backend/golang/main
+# go build -o ../../../test/geoip_lookup_golang
+# cd ../../../test/
+# chmod +x $(pwd)/geoip_lookup_golang"
 # "$(pwd)/geoip_lookup_golang" > '/tmp/haproxy_geoip_backend.log' &
 # sleep 2
 # cleanup_process 'geoip_lookup_golang'

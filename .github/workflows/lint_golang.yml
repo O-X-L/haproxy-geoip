@@ -1,0 +1,44 @@
+---
+
+name: Lint GoLang
+
+on:
+  push:
+    branches: [latest, v*]
+    paths:
+      - 'backend/golang/**.go'
+      - '.github/workflows/lint_golang.yml'
+  pull_request:
+    branches: [latest, v*]
+    paths:
+      - 'backend/golang/**.go'
+      - '.github/workflows/lint_golang.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build binary
+        run: |
+          cd backend/golang/main/
+          go build
+        shell: bash
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          args: '--config=../../.golangci.yml --out-format=colored-line-number'
+          working-directory: 'backend/golang'
