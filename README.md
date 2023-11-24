@@ -28,7 +28,7 @@ You can implement this in two ways:
 <img src="https://raw.githubusercontent.com/superstes/haproxy-geoip/latest/topology.svg" width=300>
 
 
-I might add a Golang backend later on.
+Integration with [a Golang-based backend](https://github.com/superstes/geoip-lookup-service) will be added.
 
 ### Lookup via Library
 
