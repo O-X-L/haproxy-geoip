@@ -12,7 +12,12 @@ NOTE: This functionality is covered by the [HAProxy Enterprise Maxmind-Module](h
 
 You can implement this in two ways:
 
-* Use a custom backend to do this lookups
+* Use a custom backend-service to do this lookups
+ 
+   [Go-based](https://github.com/superstes/geoip-lookup-service)
+
+   [Python3-based](https://github.com/superstes/haproxy-geoip/tree/latest/backend)
+
 * UNTESTED: Use the [resty-maxminddb LUA library](https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua) to query the MMDB databases directly from LUA
 
 ### Lookup via Backend
@@ -23,12 +28,10 @@ You can implement this in two ways:
 
 3. LUA calls a minimal web-service on localhost that queries the GeoIP-database(s)
 
-   In this case we use a basic Python3 HTTP-Server
+   You can either use a [Go-based](https://github.com/superstes/geoip-lookup-service) or [Python3-based](https://github.com/superstes/haproxy-geoip/tree/latest/backend) HTTP-Server as backend
 
 <img src="https://raw.githubusercontent.com/superstes/haproxy-geoip/latest/topology.svg" width=300>
 
-
-Integration with [a Golang-based backend](https://github.com/superstes/geoip-lookup-service) will be added.
 
 ### Lookup via Library
 
@@ -67,7 +70,13 @@ Per example from [ipinfo.io](https://ipinfo.io/account/data-downloads) or [maxmi
 
 ### Lookup
 
-#### via Backend
+#### via Go-Backend
+
+Download the binary for you system from [the releases](https://github.com/superstes/geoip-lookup-service/releases).
+
+[Read the documentation](https://github.com/superstes/geoip-lookup-service) on how to use it.
+
+#### via Python-Backend
 
 To query the MMDB databases, you will have to install the [maxminddb python-module](https://github.com/maxmind/MaxMind-DB-Reader-python):
 
@@ -91,19 +100,30 @@ You need to use the `lua/geoip_lookup_w_lib.lua` script.
 
 ## Run
 
-### With LUA-Library
-
+### With Go-Backend
 ```bash
+# start the web-service
+./geoip-lookup &
 # initialize the haproxy map(s)
 touch /tmp/haproxy_geoip_country.map
 # start haproxy
 haproxy -W -f haproxy_example.cfg
 ```
 
-### With Lookup-Backend
+### With Python-Backend
 ```bash
 # start the web-service
 python3 backend/geoip_lookup.py &
+# initialize the haproxy map(s)
+touch /tmp/haproxy_geoip_country.map
+# start haproxy
+haproxy -W -f haproxy_example.cfg
+```
+
+
+### With LUA-Library
+
+```bash
 # initialize the haproxy map(s)
 touch /tmp/haproxy_geoip_country.map
 # start haproxy
