@@ -76,6 +76,10 @@ Download the binary for you system from [the releases](https://github.com/supers
 
 [Read the documentation](https://github.com/superstes/geoip-lookup-service) on how to use it.
 
+You need to use the lua/geoip_lookup_w_go_backend.lua script.
+
+It is recommended to start Go-Backend with `-plain` command line argument to get the variable in plain text format.
+
 #### via Python-Backend
 
 To query the MMDB databases, you will have to install the [maxminddb python-module](https://github.com/maxmind/MaxMind-DB-Reader-python):
