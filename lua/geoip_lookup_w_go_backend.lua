@@ -29,7 +29,7 @@ local function http_request(lookup, filter, src)
     if res_body == nil then
         return '00'
     end
-    return res_body
+    return string.sub(res_body, 1, -2)
 end
 
 local function lookup_geoip_country(txn)
