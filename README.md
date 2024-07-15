@@ -8,17 +8,21 @@ This allows you also to handle requests from specific countries and ASNs (p.e. d
 
 NOTE: This functionality is covered by the [HAProxy Enterprise Maxmind-Module](https://www.haproxy.com/documentation/hapee/latest/load-balancing/geolocation/maxmind/)! Only use this implementation if you are limited to the community edition.
 
+----
+
 ## Topology
 
 You can implement this in two ways:
 
 * Use a custom backend-service to do this lookups
  
-   [Go-based](https://github.com/superstes/geoip-lookup-service)
+   [Go-based binary](https://github.com/superstes/geoip-lookup-service/releases/tag/1.0)
 
    [Python3-based](https://github.com/superstes/haproxy-geoip/tree/latest/backend)
 
 * UNTESTED: Use the [resty-maxminddb LUA library](https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua) to query the MMDB databases directly from LUA
+
+----
 
 ### Lookup via Backend
 
@@ -61,12 +65,15 @@ The speed-improvements as seen by running the test-script are: `first: 0.03, sec
 
 By utilizing [HAProxy's ipmask](https://www.haproxy.com/blog/ip-masking-in-haproxy) (`src,ipmask(24,48)`) feature we are able to reduce the needed entries inside the map to the minimal subnets that are announced on public BGP.  
 
+----
+
 ### GeoIP
 
 You will have to download some MMDB GeoIP databases.
 
 Per example from [ipinfo.io](https://ipinfo.io/account/data-downloads) or [maxmind](https://maxmind.com)!
 
+----
 
 ### Lookup
 
@@ -80,6 +87,8 @@ You need to use the lua/geoip_lookup_w_go_backend.lua script.
 
 It is recommended to start Go-Backend with `-plain` command line argument to get the variable in plain text format.
 
+----
+
 #### via Python-Backend
 
 To query the MMDB databases, you will have to install the [maxminddb python-module](https://github.com/maxmind/MaxMind-DB-Reader-python):
@@ -92,6 +101,8 @@ You will have to update the paths to your database-files in the `backend/geoip_l
 
 You need to use the `lua/geoip_lookup_w_backend.lua` script.
 
+----
+
 #### via Library
 
 WARNING: UNTESTED
@@ -99,6 +110,26 @@ WARNING: UNTESTED
 To query the MMDB databases, you will have to install the [resty-maxminddb LUA library](https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua) and its dependencies.
 
 You need to use the `lua/geoip_lookup_w_lib.lua` script.
+
+----
+
+### Logging
+
+You can easily log the GeoIP variables:
+
+#### HTTP Mode
+
+```
+http-request capture var(txn.geoip_asn) len 10
+http-request capture var(txn.geoip_country) len 2
+```
+
+#### TCP Mode
+
+```
+tcp-request content capture var(txn.geoip_asn) len 10
+tcp-request content capture var(txn.geoip_country) len 2
+```
 
 ----
 
