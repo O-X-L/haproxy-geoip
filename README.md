@@ -83,7 +83,7 @@ Download the binary for you system from [the releases](https://github.com/supers
 
 [Read the documentation](https://github.com/superstes/geoip-lookup-service) on how to use it.
 
-You need to use the lua/geoip_lookup_w_go_backend.lua script.
+You need to use the `lua/geoip_lookup_w_backend.lua` script.
 
 It is recommended to start Go-Backend with `-plain` command line argument to get the variable in plain text format.
 
