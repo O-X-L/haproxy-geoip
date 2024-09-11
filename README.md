@@ -71,7 +71,14 @@ By utilizing [HAProxy's ipmask](https://www.haproxy.com/blog/ip-masking-in-hapro
 
 You will have to download some MMDB GeoIP databases.
 
-Per example from [ipinfo.io](https://ipinfo.io/account/data-downloads) or [maxmind](https://maxmind.com)!
+* **IPInfo**: [Information](https://ipinfo.io/products/free-ip-database), [CC4 License](https://creativecommons.org/licenses/by-sa/4.0/) (*allows for commercial usage - you need to add an attribution*)
+
+    **Attribution**: `<p>IP address data powered by <a href="https://ipinfo.io">IPinfo</a></p>`
+
+* **MaxMind**: [Information](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data), [EULA](https://www.maxmind.com/en/geolite2/eula) (*allows for limited commercial usage - you need to add an attribution*)
+
+    **Attribution**: `This product includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com">https://www.maxmind.com</a>.`
+
 
 ----
 
