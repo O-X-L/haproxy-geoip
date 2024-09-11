@@ -46,27 +46,6 @@ You can implement this in two ways:
 
 ----
 
-## Setup
-
-Change the `/tmp/` paths inside the `haproxy_example.cfg`
-
-
-### Cache-Map
-
-You will have to decide if you want to use [HAProxy Maps](https://www.haproxy.com/blog/introduction-to-haproxy-maps) to cache Lookup results.
-
-This can speed-up the lookup for IPs that have already connected to your server.
-
-It will also use more memory.
-
-See also: `haproxy_example.cfg - test_country_cachemap`
-
-The speed-improvements as seen by running the test-script are: `first: 0.03, second: 0.00`
-
-By utilizing [HAProxy's ipmask](https://www.haproxy.com/blog/ip-masking-in-haproxy) (`src,ipmask(24,48)`) feature we are able to reduce the needed entries inside the map to the minimal subnets that are announced on public BGP.  
-
-----
-
 ### GeoIP
 
 You will have to download some MMDB GeoIP databases.
@@ -79,6 +58,69 @@ You will have to download some MMDB GeoIP databases.
 
     **Attribution**: `This product includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com">https://www.maxmind.com</a>.`
 
+----
+
+## Setup
+
+* Add the LUA script to your system
+* Install and set up the GeoIP lookup-backend of your choice
+
+## Config
+
+* Load the LUA module by adding lua-load `/etc/haproxy/lua/geoip_lookup.lua` in the global section
+* Execute the LUA script on HTTP requests:
+
+  * In HTTP mode
+
+    ```
+    # country
+    http-request lua.lookup_geoip_country
+    # asn
+    http-request lua.lookup_geoip_asn
+    ```
+
+  * In TCP mode
+
+    ```
+    # country
+    tcp-request content lua.lookup_geoip_country
+    # asn
+    tcp-request content lua.lookup_geoip_asn
+    ```
+
+* Log the data:
+
+  * In HTTP mode
+
+    ```
+    http-request capture var(txn.geoip_asn) len 10
+    http-request capture var(txn.geoip_country) len 2
+    ```
+
+  * In TCP mode
+
+    ```
+    tcp-request content capture var(txn.geoip_asn) len 10
+    tcp-request content capture var(txn.geoip_country) len 2
+    ```
+
+You can also check out the configuration example: `haproxy_example.cfg`
+
+----
+
+### Cache-Map
+
+You will have to decide if you want to use [HAProxy Maps](https://www.haproxy.com/blog/introduction-to-haproxy-maps) to cache Lookup results.
+
+This can speed up the lookup for IPs that have already connected to your server.
+
+It will also use more memory.
+
+See also: `haproxy_example.cfg - test_country_cachemap`
+
+The speed-improvements as seen by running the test-script are: `first: 0.03, second: 0.00`
+
+By utilizing [HAProxy's ipmask](https://www.haproxy.com/blog/ip-masking-in-haproxy) (`src,ipmask(24,48)`) feature we are able to reduce the needed entries inside the map to the minimal subnets that are announced on public BGP.  
 
 ----
 
@@ -117,26 +159,6 @@ WARNING: UNTESTED
 To query the MMDB databases, you will have to install the [resty-maxminddb LUA library](https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua) and its dependencies.
 
 You need to use the `lua/geoip_lookup_w_lib.lua` script.
-
-----
-
-### Logging
-
-You can easily log the GeoIP variables:
-
-#### HTTP Mode
-
-```
-http-request capture var(txn.geoip_asn) len 10
-http-request capture var(txn.geoip_country) len 2
-```
-
-#### TCP Mode
-
-```
-tcp-request content capture var(txn.geoip_asn) len 10
-tcp-request content capture var(txn.geoip_country) len 2
-```
 
 ----
 
