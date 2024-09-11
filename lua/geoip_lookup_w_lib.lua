@@ -2,6 +2,10 @@
 
 -- use with: https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua
 
+-- Source: https://github.com/O-X-L/haproxy-geoip
+-- Copyright (C) 2024 Rath Pascal
+-- License: MIT
+
 -- for data schema see:
 --   ipinfo: https://github.com/ipinfo/sample-database
 --   maxmind: https://github.com/maxmind/MaxMind-DB/tree/main/source-data

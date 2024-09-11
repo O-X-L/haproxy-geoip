@@ -1,3 +1,7 @@
+-- Source: https://github.com/O-X-L/haproxy-geoip
+-- Copyright (C) 2024 Rath Pascal
+-- License: MIT
+
 -- NOTE: the ltrim parameter can be used to remove a prefix - like: 'AS1337' => '1337'
 
 local function http_request(lookup, filter, src, ltrim)
@@ -34,7 +38,7 @@ local function http_request(lookup, filter, src, ltrim)
     return string.sub(res_body, 1 + ltrim, -2)
 end
 
--- examples for maxmind:
+-- examples for MaxMind:
 
 local function lookup_geoip_country(txn)
     country_code = http_request('country', 'country.iso_code', txn.f:src(), 0)

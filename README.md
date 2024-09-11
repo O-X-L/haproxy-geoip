@@ -16,9 +16,9 @@ You can implement this in two ways:
 
 * Use a custom backend-service to do this lookups
  
-   [Go-based binary](https://github.com/superstes/geoip-lookup-service/releases/tag/1.0)
+   [Go-based binary](https://github.com/O-X-L/geoip-lookup-service/releases/tag/1.0)
 
-   [Python3-based](https://github.com/superstes/haproxy-geoip/tree/latest/backend)
+   [Python3-based](https://github.com/O-X-L/haproxy-geoip/tree/latest/backend)
 
 * UNTESTED: Use the [resty-maxminddb LUA library](https://raw.githubusercontent.com/anjia0532/lua-resty-maxminddb/master/lib/resty/maxminddb.lua) to query the MMDB databases directly from LUA
 
@@ -32,9 +32,9 @@ You can implement this in two ways:
 
 3. LUA calls a minimal web-service on localhost that queries the GeoIP-database(s)
 
-   You can either use a [Go-based](https://github.com/superstes/geoip-lookup-service) or [Python3-based](https://github.com/superstes/haproxy-geoip/tree/latest/backend) HTTP-Server as backend
+   You can either use a [Go-based](https://github.com/O-X-L/geoip-lookup-service) or [Python3-based](https://github.com/O-X-L/haproxy-geoip/tree/latest/backend) HTTP-Server as backend
 
-<img src="https://raw.githubusercontent.com/superstes/haproxy-geoip/latest/topology.svg" width=300>
+<img src="https://raw.githubusercontent.com/O-X-L/haproxy-geoip/latest/topology.svg" width=300>
 
 
 ### Lookup via Library
@@ -79,9 +79,9 @@ Per example from [ipinfo.io](https://ipinfo.io/account/data-downloads) or [maxmi
 
 #### via Go-Backend
 
-Download the binary for you system from [the releases](https://github.com/superstes/geoip-lookup-service/releases).
+Download the binary for you system from [the releases](https://github.com/O-X-L/geoip-lookup-service/releases).
 
-[Read the documentation](https://github.com/superstes/geoip-lookup-service) on how to use it.
+[Read the documentation](https://github.com/O-X-L/geoip-lookup-service) on how to use it.
 
 You need to use the `lua/geoip_lookup_w_backend.lua` script.
 
@@ -201,4 +201,4 @@ bash test.sh
 > FINISHED - exiting
 ```
 
-Feel free to [contribute more test-cases](https://github.com/superstes/haproxy-geoip/blob/latest/test/requests.sh)!
+Feel free to [contribute more test-cases](https://github.com/O-X-L/haproxy-geoip/blob/latest/test/requests.sh)!

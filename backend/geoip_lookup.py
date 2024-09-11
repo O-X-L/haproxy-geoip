@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# Source: https://github.com/O-X-L/haproxy-geoip
+# Copyright (C) 2024 Rath Pascal
+# License: MIT
+
 # requirements: pip install maxminddb
 
 from pathlib import Path
