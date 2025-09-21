@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # Source: https://github.com/O-X-L/haproxy-geoip
-# Copyright (C) 2024 Rath Pascal
+# Copyright (C) 2025 Rath Pascal (contact+geoip@oxl.at)
 # License: MIT
 
 # requirements: pip install maxminddb
@@ -22,44 +22,66 @@ PORT = 6970
 DATABASES = {
     'lite': {
         'file': '/tmp/ipinfo_lite.mmdb', 'fallback_selector': 'country_code', 'fallback': '-',
-        'selectors': [
-            'asn', 'as_name', 'as_domain', 'country_code', 'country',
-            'continent_code', 'continent',
-        ],
     },
     'core': {
         'file': '/tmp/ipinfo_core.mmdb', 'fallback_selector': 'city', 'fallback': '-',
-        'selectors': [
-            'geo.city', 'geo.region', 'geo.country', 'geo.country_code', 'geo.continent', 'geo.continent_code',
-            'geo.latitude', 'geo.longitude', 'geo.timezone', 'geo.postal_code',
-            'as.asn', 'as.name', 'as.domain', 'as.type',
-            'is_anonymous', 'is_anycast', 'is_mobile', 'is_satellite', 'hostname',
-        ],
     },
 }
-DATABASES['asn'] = DATABASES['lite']
-DATABASES['country'] = DATABASES['lite']
-DATABASES['continent'] = DATABASES['lite']
-DATABASES['city'] = DATABASES['core']
+
+LOOKUPS = {
+    'asn': DATABASES['lite'],
+    'as_name': DATABASES['lite'],
+    'as_domain': DATABASES['lite'],
+    'country_code': DATABASES['lite'],
+    'country': DATABASES['lite'],
+    'continent_code': DATABASES['lite'],
+    'continent': DATABASES['lite'],
+    'geo.city': DATABASES['core'],
+    'geo.region': DATABASES['core'],
+    'geo.country': DATABASES['core'],
+    'geo.country_code': DATABASES['core'],
+    'geo.continent': DATABASES['core'],
+    'geo.continent_code': DATABASES['core'],
+    'geo.latitude': DATABASES['core'],
+    'geo.longitude': DATABASES['core'],
+    'geo.timezone': DATABASES['core'],
+    'geo.postal_code': DATABASES['core'],
+    'as.asn': DATABASES['core'],
+    'as.name': DATABASES['core'],
+    'as.domain': DATABASES['core'],
+    'as.type': DATABASES['core'],
+    'is_anonymous': DATABASES['core'],
+    'is_anycast': DATABASES['core'],
+    'is_mobile': DATABASES['core'],
+    'is_satellite': DATABASES['core'],
+    'hostname': DATABASES['core'],
+}
 
 # maxmind
 # DATABASES = {
-#     'country': {'file': '/tmp/country.mmdb', 'attr': 'country.iso_code', 'fallback': '00'},
-#     'continent': {'file': '/tmp/country.mmdb', 'attr': 'continent.code', 'fallback': '00'},
-#     'city': {'file': '/tmp/city.mmdb', 'attr': 'city.names.en', 'fallback': '-'},
-#     'asn': {'file': '/tmp/asn.mmdb', 'attr': 'autonomous_system_number', 'fallback': '0'},
-#     'asname': {'file': '/tmp/asn.mmdb', 'attr': 'autonomous_system_organization', 'fallback': '-'},
+#     'lite_country': {'file': '/tmp/maxmind_lite_country.mmdb', 'attr': 'country.iso_code', 'fallback': '-'},
+#     'lite_city': {'file': '/tmp/maxmind_lite_city.mmdb', 'attr': 'city.names.en', 'fallback': '-'},
+#     'lite_asn': {'file': '/tmp/maxmind_lite_asn.mmdb', 'attr': 'autonomous_system_number', 'fallback': '0'},
+# }
+#
+# LOOKUPS = {
+#     'country.iso_code': DATABASES['lite_country'],
+#     'continent.code': DATABASES['lite_country'],
+#     'city.names.en': DATABASES['lite_city'],
+#     'autonomous_system_number': DATABASES['lite_asn'],
+#     'autonomous_system_organization': DATABASES['lite_asn'],
 # }
 
 
-def _lookup_mmdb(db: dict, selector: str, ip: str) -> str:
+def _lookup_mmdb(lookup: str, ip: str) -> str:
+    db = LOOKUPS[lookup]
     try:
         if not Path(db['file']).is_file():
             return db['fallback']
 
         with open_database(db['file']) as db_reader:
             data = db_reader.get(ip)
-            for attr in selector.split('.'):
+            for attr in lookup.split('.'):
                 if attr in data:
                     data = data[attr]
 
@@ -93,24 +115,14 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
         ip = _ensure_str(q['ip'])
 
-        if 'lookup' not in q or _ensure_str(q['lookup']) not in DATABASES:
+        if 'lookup' not in q or _ensure_str(q['lookup']) not in LOOKUPS:
             self.send_response(400)
             self.end_headers()
             self.wfile.write('Got unsupported lookup'.encode('utf-8'))
 
         lookup = _ensure_str(q['lookup'])
-        selector = DATABASES[lookup]['fallback_selector']
 
-        if 'filter' in q:
-            if _ensure_str(q['filter']) not in DATABASES[lookup]['selectors']:
-                self.send_response(400)
-                self.end_headers()
-                self.wfile.write('Got unsupported filter/selector'.encode('utf-8'))
-
-            else:
-                selector = _ensure_str(q['filter'])
-
-        data = _lookup_mmdb(DATABASES[lookup], selector, ip)
+        data = _lookup_mmdb(lookup, ip)
         self.send_response(200)
         self.end_headers()
         self.wfile.write(data.encode('utf-8'))

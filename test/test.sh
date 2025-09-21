@@ -111,17 +111,17 @@ touch '/tmp/haproxy_geoip_country.map'
 # touch '/tmp/haproxy_geoip_continent.map'
 touch '/tmp/haproxy_geoip_asn.map'
 touch '/tmp/haproxy_geoip_asname.map'
-rm -f '/tmp/haproxy_test_failed.log'
+rm -f /tmp/haproxy_test*.log
 
 echo 'STARTING HAPROXY'
 ln -sf "$(pwd)/../lua/geoip_lookup_w_backend.lua" '/tmp/haproxy_geoip_lookup.lua'
-haproxy -W -f haproxy_test.cfg > '/tmp/haproxy_test.log' 2> '/tmp/haproxy_test_err.log' &
+haproxy -W -f haproxy_test.cfg >> '/tmp/haproxy_test.log' 2> '/tmp/haproxy_test_err.log' &
 set +e
 sleep 2
 
 echo ''
 echo 'TESTING with PYTHON-BACKEND'
-python3 "$(pwd)/../backend/geoip_lookup.py" > '/tmp/haproxy_geoip_backend.log' 2>&1 &
+python3 "$(pwd)/../backend/geoip_lookup.py" >> '/tmp/haproxy_geoip_backend.log' 2>&1 &
 sleep 2
 
 if [[ "$TEST_MM" == "1" ]]

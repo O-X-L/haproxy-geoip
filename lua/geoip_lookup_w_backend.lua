@@ -1,10 +1,10 @@
 -- Source: https://github.com/O-X-L/haproxy-geoip
--- Copyright (C) 2024 Rath Pascal
+-- Copyright (C) 2025 Rath Pascal (contact+geoip@oxl.at)
 -- License: MIT
 
 -- NOTE: the ltrim parameter can be used to remove a prefix - like: 'AS1337' => '1337'
 
-local function http_request(lookup, filter, src, ltrim)
+local function http_request(lookup, src, ltrim)
     local s = core.tcp()
 
     local addr = '127.0.0.1'
@@ -17,7 +17,7 @@ local function http_request(lookup, filter, src, ltrim)
     }
 
     local req = {
-        [1] = 'GET /?lookup=' .. lookup .. '&ip=' .. src .. '&filter=' .. filter .. ' HTTP/1.1',
+        [1] = 'GET /?lookup=' .. lookup .. '&ip=' .. src .. ' HTTP/1.1',
         [2] = table.concat(hdrs, '\r\n'),
         [3] = '\r\n'
     }
@@ -41,34 +41,34 @@ end
 -- examples for MaxMind:
 
 local function lookup_geoip_country(txn)
-    country_code = http_request('country', 'country.iso_code', txn.f:src(), 0)
+    country_code = http_request('country.iso_code', txn.f:src(), 0)
     txn:set_var('txn.geoip_country', country_code)
 end
 
 local function lookup_geoip_asn(txn)
-    asn = http_request('asn', 'autonomous_system_number', txn.f:src(), 0)
+    asn = http_request('autonomous_system_number', txn.f:src(), 0)
     txn:set_var('txn.geoip_asn', asn)
 end
 
 local function lookup_geoip_asname(txn)
-    asname = http_request('asn', 'autonomous_system_organization', txn.f:src(), 0)
+    asname = http_request('autonomous_system_organization', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
 -- examples for IPInfo:
 
 local function lookup_geoip_country(txn)
-    country_code = http_request('country', 'country_code', txn.f:src(), 0)
+    country_code = http_request('country_code', txn.f:src(), 0)
     txn:set_var('txn.geoip_country', country_code)
 end
 
 local function lookup_geoip_asn(txn)
-    asn = http_request('asn', 'asn', txn.f:src(), 2)
+    asn = http_request('asn', txn.f:src(), 2)
     txn:set_var('txn.geoip_asn', asn)
 end
 
 local function lookup_geoip_asname(txn)
-    asname = http_request('asn', 'as_name', txn.f:src(), 0)
+    asname = http_request('as_name', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
