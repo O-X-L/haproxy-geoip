@@ -77,7 +77,7 @@ jobs:
           cd test/
 
           unzip -P ${{ secrets.IPINFO_DB_ZIP }} ipinfo_lite.mmdb.zip
-          cp ipinfo_lite.mmdb.zip /tmp/ipinfo_lite.mmdb
+          cp ipinfo_lite.mmdb /tmp/ipinfo_lite.mmdb
 
           bash test.sh
 

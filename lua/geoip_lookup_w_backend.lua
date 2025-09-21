@@ -33,7 +33,7 @@ local function http_request(lookup, src, ltrim)
     end
     local res_body = s:receive('*a')
     if res_body == nil then
-        return '00'
+        return '-'
     end
     return string.sub(res_body, 1 + ltrim, -1)
 end

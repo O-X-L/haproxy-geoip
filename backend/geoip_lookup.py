@@ -5,8 +5,10 @@
 # License: MIT
 
 # requirements: pip install maxminddb
+# test: curl -v 'http://127.0.0.1:6970?lookup=country&ip=1.1.1.1'
 
 from pathlib import Path
+from ipaddress import ip_address
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
@@ -113,7 +115,13 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write('No IP provided'.encode('utf-8'))
 
-        ip = _ensure_str(q['ip'])
+        try:
+            ip = str(ip_address(_ensure_str(q['ip'])))
+
+        except ValueError:
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write('Invalid IP provided'.encode('utf-8'))
 
         if 'lookup' not in q or _ensure_str(q['lookup']) not in LOOKUPS:
             self.send_response(400)
