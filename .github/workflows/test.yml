@@ -74,10 +74,12 @@ jobs:
 
       - name: Running Tests with IPInfo-Lite DB
         run: |
+          cd test/
+
           unzip -P ${{ secrets.IPINFO_DB_ZIP }} ipinfo_lite.mmdb.zip
           cp ipinfo_lite.mmdb.zip /tmp/ipinfo_lite.mmdb
 
-          bash test/test.sh
+          bash test.sh
 
           echo 'LOGS:'
           echo ''
