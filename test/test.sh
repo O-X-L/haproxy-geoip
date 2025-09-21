@@ -104,12 +104,14 @@ function log_error() {
   want="$2"
   echo "ERROR: REQUEST "$nr" - LOOKUP FAILED"
   echo " > Result '$(last_log_haproxy)' != '$want'"
+  touch '/tmp/haproxy_test_failed.log'
 }
 
 touch '/tmp/haproxy_geoip_country.map'
 # touch '/tmp/haproxy_geoip_continent.map'
 touch '/tmp/haproxy_geoip_asn.map'
 touch '/tmp/haproxy_geoip_asname.map'
+rm -f '/tmp/haproxy_test_failed.log'
 
 echo 'STARTING HAPROXY'
 ln -sf "$(pwd)/../lua/geoip_lookup_w_backend.lua" '/tmp/haproxy_geoip_lookup.lua'
@@ -162,5 +164,16 @@ cleanup_process 'haproxy'
 sleep 5
 
 echo ''
-echo 'FINISHED - exiting'
-echo ''
+
+if [ -f '/tmp/haproxy_test_failed.log' ]
+then
+  echo 'FAILED'
+  echo ''
+  exit 1
+
+else
+  echo 'SUCCESS'
+  echo ''
+  exit 0
+
+fi
