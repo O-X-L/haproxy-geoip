@@ -107,7 +107,7 @@ function log_error() {
 }
 
 touch '/tmp/haproxy_geoip_country.map'
-touch '/tmp/haproxy_geoip_continent.map'
+# touch '/tmp/haproxy_geoip_continent.map'
 touch '/tmp/haproxy_geoip_asn.map'
 touch '/tmp/haproxy_geoip_asname.map'
 

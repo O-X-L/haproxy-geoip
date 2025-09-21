@@ -13,7 +13,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - haproxy-version: '3.2'
+            os: 'ubuntu-24.04'
+
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
 
     steps:
@@ -29,13 +36,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install zip haproxy
-          pip install maxminddb
+          sudo apt install -y zip software-properties-common >/dev/null
+
+          sudo add-apt-repository -y ppa:vbernat/haproxy-${{ matrix.haproxy-version }} >/dev/null
+          sudo apt-get update >/dev/null
+          sudo apt-get install -y haproxy >/dev/null
+    
+          pip install maxminddb >/dev/null
         shell: bash
 
       - name: Checking HAProxy
         run: |
           set +e
+          touch '/tmp/haproxy_geoip_country.map'
+          # touch '/tmp/haproxy_geoip_continent.map'
+          touch '/tmp/haproxy_geoip_asn.map'
+          touch '/tmp/haproxy_geoip_asname.map'
+
           timeout 5 haproxy -W -f test/haproxy_test.cfg
           ec="$?"
           if [[ "$ec" != "124" ]]
