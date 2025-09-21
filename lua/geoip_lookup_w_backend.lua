@@ -35,7 +35,7 @@ local function http_request(lookup, filter, src, ltrim)
     if res_body == nil then
         return '00'
     end
-    return string.sub(res_body, 1 + ltrim, -2)
+    return string.sub(res_body, 1 + ltrim, -1)
 end
 
 -- examples for MaxMind:
@@ -58,7 +58,7 @@ end
 -- examples for IPInfo:
 
 local function lookup_geoip_country(txn)
-    country_code = http_request('country', 'country', txn.f:src(), 0)
+    country_code = http_request('country', 'country_code', txn.f:src(), 0)
     txn:set_var('txn.geoip_country', country_code)
 end
 
@@ -68,7 +68,7 @@ local function lookup_geoip_asn(txn)
 end
 
 local function lookup_geoip_asname(txn)
-    asname = http_request('asn', 'name', txn.f:src(), 0)
+    asname = http_request('asn', 'as_name', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
