@@ -9,6 +9,8 @@ on:
       - 'test/**'
       - 'lua/geoip_lookup_w_backend.lua'
       - 'backend/geoip_lookup.py'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/test_pr.yml'
   workflow_dispatch:
 
 jobs:
