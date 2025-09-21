@@ -2,8 +2,8 @@
 
 DB_MM_COUNTRY='/tmp/maxmind_country.mmdb'
 DB_MM_ASN='/tmp/maxmind_asn.mmdb'
-DB_II_COUNTRY='/tmp/ipinfo_country.mmdb'
-DB_II_ASN='/tmp/ipinfo_asn.mmdb'
+DB_II_COUNTRY='/tmp/ipinfo_lite.mmdb'
+DB_II_ASN='/tmp/ipinfo_lite.mmdb'
 
 set -euo pipefail
 
@@ -60,26 +60,50 @@ function last_log_haproxy {
   tail -n 1 '/tmp/haproxy_test.log' | cut -d '{' -f2 | cut -d '}' -f1
 }
 
+function last_log_haproxy_cache_net() {
+  last_log_haproxy | cut -d '|' -f 1
+}
+
 function last_log_haproxy_country() {
   last_log_haproxy | cut -d '|' -f 2
 }
 
-function last_log_haproxy_continent() {
+#function last_log_haproxy_continent() {
+#  last_log_haproxy | cut -d '|' -f 3
+#}
+
+function last_log_haproxy_asn() {
   last_log_haproxy | cut -d '|' -f 3
 }
 
-function last_log_haproxy_asn() {
+function last_log_haproxy_as_name() {
   last_log_haproxy | cut -d '|' -f 4
 }
 
-function last_log_haproxy_asname() {
-  last_log_haproxy | cut -d '|' -f 5
+function perform_request() {
+  testSrc="$1"
+  nr="$2"
+  want="$3"
+  echo " > Looking up: ${testSrc}"
+  curl --silent "$TEST_PROXY" -H "${TEST_HDR}: ${testSrc}" 2>&1 > /dev/null
+  check_lookup_result "$nr" "$want"
 }
 
-function request_time() {
-  testSrc="$1"
-  reqTime="$(/usr/bin/time -f '%e' curl --silent "$TEST_PROXY" -H "${TEST_HDR}: ${testSrc}" 2>&1 > /dev/null)"
-  echo "$reqTime"
+function check_lookup_result() {
+  nr="$1"
+  want="$2"
+
+  if [[ "$want" != "$(last_log_haproxy)" ]]
+  then
+    log_error "$nr" "$want"
+  fi
+}
+
+function log_error() {
+  nr="$1"
+  want="$2"
+  echo "ERROR: REQUEST "$nr" - LOOKUP FAILED"
+  echo " > Result '$(last_log_haproxy)' != '$want'"
 }
 
 touch '/tmp/haproxy_geoip_country.map'
@@ -95,7 +119,7 @@ sleep 2
 
 echo ''
 echo 'TESTING with PYTHON-BACKEND'
-python3 "$(pwd)/../backend/geoip_lookup.py" > '/tmp/haproxy_geoip_backend.log' &
+python3 "$(pwd)/../backend/geoip_lookup.py" > '/tmp/haproxy_geoip_backend.log' 2>&1 &
 sleep 2
 
 if [[ "$TEST_MM" == "1" ]]
@@ -105,6 +129,7 @@ then
   ln -sf "$DB_MM_ASN" '/tmp/asn.mmdb'
 
   source ./requests.sh
+  reload_haproxy
 fi
 
 if [[ "$TEST_II" == "1" ]]
@@ -114,6 +139,7 @@ then
   ln -sf "$DB_II_ASN" '/tmp/asn.mmdb'
 
   source ./requests.sh
+  reload_haproxy
 fi
 
 cleanup_process 'geoip_lookup.py'

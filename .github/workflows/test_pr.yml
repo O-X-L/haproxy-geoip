@@ -1,0 +1,79 @@
+---
+
+name: Test on PR
+
+on:
+  pull_request_target:
+    branches: ['latest']
+    paths:
+      - 'test/**'
+      - 'lua/geoip_lookup_w_backend.lua'
+      - 'backend/geoip_lookup.py'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt install zip haproxy
+          pip install maxminddb
+        shell: bash
+
+      - name: Checking HAProxy
+        run: |
+          set +e
+          timeout 5 haproxy -W -f test/haproxy_test.cfg
+          ec="$?"
+          if [[ "$ec" != "124" ]]
+          then
+            exit 1
+          fi
+        shell: bash
+
+      - name: Checking Python-Backend
+        run: |
+          set +e
+          timeout 5 python backend/geoip_lookup.py
+          ec="$?"
+          if [[ "$ec" != "124" ]]
+          then
+            exit 1
+          fi
+        shell: bash
+
+      - name: Running Tests with IPInfo-Lite DB
+        run: |
+          unzip -P ${{ secrets.IPINFO_DB_ZIP }} ipinfo_lite.mmdb.zip
+          cp ipinfo_lite.mmdb.zip /tmp/ipinfo_lite.mmdb
+
+          bash test/test.sh
+
+          echo 'LOGS:'
+          echo ''
+          echo '/tmp/haproxy_geoip_backend.log'
+          cat /tmp/haproxy_geoip_backend.log
+
+          if [ -f /tmp/haproxy_test_err.log ]
+          then
+            echo ''
+            echo '/tmp/haproxy_test_err.log'
+            cat /tmp/haproxy_test_err.log
+          fi
+
+          echo ''
+          echo '/tmp/haproxy_test.log'
+          cat /tmp/haproxy_test.log
+        shell: bash

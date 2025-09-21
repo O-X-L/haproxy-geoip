@@ -1,5 +1,9 @@
 # HAProxy - GeoIP Lookups
 
+[![Lint Python](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml/badge.svg?branch=latest)](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml)
+[![Integration Tests](https://github.com/O-X-L/haproxy-geoip/actions/workflows/test.yml/badge.svg?branch=latest)](https://github.com/O-X-L/haproxy-geoip/actions/workflows/test.yml)
+
+
 This is an example on how to use GeoIP lookups in combination with HAProxy.
 
 Data linking requests to its origin country and ASN/ISP can be very useful when dealing with application-level attacks.
