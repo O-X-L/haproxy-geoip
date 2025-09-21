@@ -47,9 +47,8 @@ jobs:
       - name: Checking HAProxy
         run: |
           set +e
-
-          touch /tmp/haproxy_geoip_country.map /tmp/haproxy_geoip_continent.map /tmp/haproxy_geoip_asn.map
-          touch /tmp/haproxy_geoip_asname.map /tmp/haproxy_geoip_lookup.lua
+          touch /tmp/haproxy_geoip_country.map /tmp/haproxy_geoip_continent.map /tmp/haproxy_geoip_asn.map /tmp/haproxy_geoip_asname.map
+          ln -sf /lua/geoip_lookup_w_backend.lua /tmp/haproxy_geoip_lookup.lua
 
           timeout 5 haproxy -W -f test/haproxy_test.cfg
           ec="$?"
