@@ -4,6 +4,16 @@
 
 -- NOTE: the ltrim parameter can be used to remove a prefix - like: 'AS1337' => '1337'
 
+-- Helper functions ---
+local function normalize_ip(ip)
+    local V4_MAPPED_PREFIX = "::ffff:"
+    local PREFIX_LEN = 7
+    if ip:sub(1, PREFIX_LEN) == V4_MAPPED_PREFIX then
+        return ip:sub(PREFIX_LEN + 1)
+    end
+    return ip
+end
+
 local function http_request(lookup, filter, src, ltrim)
     local s = core.tcp()
 
@@ -38,17 +48,12 @@ local function http_request(lookup, filter, src, ltrim)
     if res_body == nil then
         return '00'
     end
-    return string.sub(res_body, 1 + ltrim, -2)
-end
+    local result = string.sub(res_body, 1 + ltrim, -2)
 
--- Helper functions ---
-local function normalize_ip(ip)
-    -- If it's an IPv4-mapped IPv6 address (starts with ::ffff:)
-    local v4mapped = ip:match("^::ffff:(.+)")
-    if v4mapped then
-        return v4mapped
-    end
-    return ip
+    -- Remove surrounding quotes if present (e.g. "CH")
+    result = result:gsub('^"(.*)"$', '%1')
+
+    return result
 end
 
 -- examples for MaxMind:
@@ -71,17 +76,17 @@ end
 -- examples for IPInfo:
 
 local function lookup_geoip_country(txn)
-    country_code = http_request('country', 'country', txn.f:src(), 0)
+    country_code = http_request('country_code', txn.f:src(), 0)
     txn:set_var('txn.geoip_country', country_code)
 end
 
 local function lookup_geoip_asn(txn)
-    asn = http_request('asn', 'asn', txn.f:src(), 2)
+    asn = http_request('asn', txn.f:src(), 2)
     txn:set_var('txn.geoip_asn', asn)
 end
 
 local function lookup_geoip_asname(txn)
-    asname = http_request('asn', 'name', txn.f:src(), 0)
+    asname = http_request('as_name', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
