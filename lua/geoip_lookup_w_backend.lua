@@ -10,6 +10,9 @@ local function http_request(lookup, src, ltrim)
     local addr = '127.0.0.1'
     local port = 6970
 
+    -- normalize the IP before using it
+    src = normalize_ip(src)
+
     local hdrs = {
         [1] = string.format('host: %s:%s', addr, port),
         [2] = 'accept: */*',
@@ -36,6 +39,16 @@ local function http_request(lookup, src, ltrim)
         return '-'
     end
     return string.sub(res_body, 1 + ltrim, -1)
+end
+
+-- Helper functions ---
+local function normalize_ip(ip)
+    -- If it's an IPv4-mapped IPv6 address (starts with ::ffff:)
+    local v4mapped = ip:match("^::ffff:(.+)")
+    if v4mapped then
+        return v4mapped
+    end
+    return ip
 end
 
 -- examples for MaxMind:
