@@ -59,17 +59,17 @@ end
 -- examples for MaxMind:
 
 local function lookup_geoip_country(txn)
-    country_code = http_request('country', 'country.iso_code', txn.f:src(), 0)
+    country_code = http_request('country.iso_code', txn.f:src(), 0)
     txn:set_var('txn.geoip_country', country_code)
 end
 
 local function lookup_geoip_asn(txn)
-    asn = http_request('asn', 'autonomous_system_number', txn.f:src(), 0)
+    asn = http_request('autonomous_system_number', txn.f:src(), 0)
     txn:set_var('txn.geoip_asn', asn)
 end
 
 local function lookup_geoip_asname(txn)
-    asname = http_request('asn', 'autonomous_system_organization', txn.f:src(), 0)
+    asname = http_request('autonomous_system_organization', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
