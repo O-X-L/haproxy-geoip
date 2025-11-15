@@ -1,5 +1,13 @@
 # HAProxy - GeoIP Lookups
 
+<p align="center">
+    <a title="Support this Project (Donate, Support-Licenses)" href="https://shop.oxl.app/collections/open-source">
+        <img src="https://files.oxl.at/img/badge-oss-support.svg" alt="Support Badge (Donate, Support-Licenses)"/>
+    </a>
+</p>
+
+----
+
 [![Lint Python](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml/badge.svg?branch=latest)](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml)
 [![Integration Tests](https://github.com/O-X-L/haproxy-geoip/actions/workflows/test.yml/badge.svg?branch=latest)](https://github.com/O-X-L/haproxy-geoip/actions/workflows/test.yml)
 
