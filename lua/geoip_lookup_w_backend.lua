@@ -1,5 +1,5 @@
 -- Source: https://github.com/O-X-L/haproxy-geoip
--- Copyright (C) 2025 Rath Pascal (contact+geoip@oxl.at)
+-- Copyright (C) 2025 OXL IT Services / Rath Pascal (contact+geoip@oxl.at)
 -- License: MIT
 
 -- NOTE: the ltrim parameter can be used to remove a prefix - like: 'AS1337' => '1337'
@@ -69,6 +69,24 @@ end
 
 local function lookup_geoip_asname(txn)
     asname = http_request('as_name', txn.f:src(), 0)
+    txn:set_var('txn.geoip_asname', asname)
+end
+
+-- examples for OXL (https://github.com/O-X-L/geoip-asn):
+
+local function lookup_geoip_country(txn)
+    -- NOTE: This is not really the IP's country
+    country_code = http_request('organization.country', txn.f:src(), 0)
+    txn:set_var('txn.geoip_country', country_code)
+end
+
+local function lookup_geoip_asn(txn)
+    asn = http_request('asn', txn.f:src(), 2)
+    txn:set_var('txn.geoip_asn', asn)
+end
+
+local function lookup_geoip_asname(txn)
+    asname = http_request('organization.name', txn.f:src(), 0)
     txn:set_var('txn.geoip_asname', asname)
 end
 
