@@ -35,7 +35,7 @@ local function http_request(lookup, src, ltrim)
     if res_body == nil then
         return '-'
     end
-    return string.sub(res_body, 1 + ltrim, -1)
+    return string.sub(res_body, 1 + ltrim, -1):gsub("[\n\r]", "")
 end
 
 -- examples for MaxMind:
