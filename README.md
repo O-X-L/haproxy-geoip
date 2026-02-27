@@ -1,11 +1,5 @@
 # HAProxy - GeoIP Lookups
 
-<p align="center">
-    <a title="Support this Project (Donate, Support-Licenses)" href="https://shop.oxl.app/collections/open-source">
-        <img src="https://files.oxl.at/img/badge-oss-support.svg" alt="Support Badge (Donate, Support-Licenses)"/>
-    </a>
-</p>
-
 ----
 
 [![Lint Python](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml/badge.svg?branch=latest)](https://github.com/O-X-L/haproxy-geoip/actions/workflows/lint_python.yml)
@@ -18,7 +12,7 @@ Data linking requests to its origin country and ASN/ISP can be very useful when 
 
 This allows you also to handle requests from specific countries and ASNs (p.e. datacenters/hosting providers) differently than others.
 
-NOTE: This functionality is covered by the [HAProxy Enterprise Maxmind-Module](https://www.haproxy.com/documentation/hapee/latest/load-balancing/geolocation/maxmind/)! Only use this implementation if you are limited to the community edition.
+Note: The HAProxy enterprise-edition has native GeoIP-support that will provide you better performance.
 
 ----
 
